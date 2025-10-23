@@ -38,7 +38,7 @@ fun HomePage(name: String, modifier: Modifier = Modifier.Companion) {
 }
 */
 @Composable
-fun HomePage(modifier: Modifier = Modifier) {
+fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     Column(
         modifier = modifier
             .fillMaxSize()
