@@ -79,21 +79,30 @@ fun LoginPage(modifier: Modifier = Modifier) {
             visualTransformation = PasswordVisualTransformation()
         )
         Row(modifier = modifier) {
-            Button(onClick = {
+            Button(
+                onClick = {
 
-                Toast.makeText(activity, "Login OK!", Toast.LENGTH_LONG).show()
-                activity.startActivity(
-                    Intent(activity, MainActivity::class.java).setFlags(
-                        FLAG_ACTIVITY_SINGLE_TOP
+                    Toast.makeText(activity, "Login OK!", Toast.LENGTH_LONG).show()
+                    activity.startActivity(
+                        Intent(activity, MainActivity::class.java).setFlags(
+                            FLAG_ACTIVITY_SINGLE_TOP
+                        )
                     )
-                )
-            }
+                },
+                enabled = email.isNotEmpty() && password.isNotEmpty()
             ) {
                 Text("Login")
             }
             Spacer(modifier = modifier.size(24.dp))
             Button(
-                onClick = { activity.startActivity(Intent(activity, RegisterActivity::class.java)) },
+                onClick = {
+                    activity.startActivity(
+                        Intent(
+                            activity,
+                            RegisterActivity::class.java
+                        )
+                    )
+                },
             ) {
                 Text("Registre-se")
             }
