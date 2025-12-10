@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +48,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val fbDB = remember { FBDatabase() }
             val weatherService = remember { WeatherService() }
-            val viewModel : MainViewModel = viewModel(
+            val viewModel: MainViewModel = viewModel(
                 factory = MainViewModelFactory(fbDB, weatherService)
             )
 
@@ -98,7 +99,7 @@ class MainActivity : ComponentActivity() {
 
                             )
 
-                        BottomNavBar(navController = navController, items)
+                        BottomNavBar(viewModel, items)
 
                     },
 
@@ -114,6 +115,19 @@ class MainActivity : ComponentActivity() {
                         launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
                         MainNavHost(navController = navController, viewModel)
                     }
+                    LaunchedEffect(viewModel.page) {
+                        navController.navigate(viewModel.page) {
+                            // Volta pilha de navegação até HomePage (startDest).
+                            navController.graph.startDestinationRoute?.let {
+                                popUpTo(it) {
+                                    saveState = true
+                                }
+                                restoreState = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+
                 }
             }
         }

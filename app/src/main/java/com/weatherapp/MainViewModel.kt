@@ -1,5 +1,6 @@
 package com.weatherapp
 
+import Route
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -34,6 +35,12 @@ class MainViewModel(
     private val _user = mutableStateOf<User?>(null)
     val user: User?
         get() = _user.value
+    private var _page = mutableStateOf<Route>(Route.Home)
+    var page: Route
+        get() = _page.value
+        set(tmp) {
+            _page.value = tmp
+        }
 
     init {
         db.setListener(this)
