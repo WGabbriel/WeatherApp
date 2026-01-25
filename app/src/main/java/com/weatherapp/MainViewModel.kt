@@ -24,6 +24,8 @@ class MainViewModel(
     private val _cities = mutableStateMapOf<String, City>()
     val cities: List<City>
         get() = _cities.values.toList().sortedBy { it.name }
+    val cityMap: Map<String, City>
+        get() = _cities.toMap()
     private var _city = mutableStateOf<String?>(null)
     var city: String?
         get() = _city.value
@@ -44,6 +46,10 @@ class MainViewModel(
 
     init {
         db.setListener(this)
+    }
+
+    fun update(city: City) {
+        db.update(city.toFBCity())
     }
 
     fun remove(city: City) {
@@ -117,7 +123,7 @@ class MainViewModel(
 
 
     fun loadBitmap(name: String) {
-        _weather[name]?.let{ weather ->
+        _weather[name]?.let { weather ->
             service.getBitmap(weather.imgUrl) { bitmap ->
                 _weather[name] = weather.copy(bitmap = bitmap)
             }
