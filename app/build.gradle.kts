@@ -5,8 +5,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.20"
-    id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.google.gms.google.services)
+    id("com.google.devtools.ksp") version "2.3.4"
 }
 
 android {
@@ -26,8 +27,10 @@ android {
         val keyFile = project.rootProject.file("local.properties")
         val props = Properties()
         props.load(keyFile.inputStream())
-        buildConfigField ("String", "WEATHER_API_KEY",
-            props.getProperty("WEATHER_API_KEY"))
+        buildConfigField(
+            "String", "WEATHER_API_KEY",
+            props.getProperty("WEATHER_API_KEY")
+        )
 
     }
 
@@ -41,12 +44,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
+//    kotlinOptions {
+//      jvmTarget = "11"
+// }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -54,6 +60,10 @@ android {
 }
 
 dependencies {
+    val room_version = "2.8.4"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -83,7 +93,7 @@ dependencies {
     // Google maps for compose
     implementation("com.google.maps.android:maps-compose:2.8.0")
 
-    implementation ("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation ("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("io.coil-kt:coil-compose:2.7.0") // coil
 }
