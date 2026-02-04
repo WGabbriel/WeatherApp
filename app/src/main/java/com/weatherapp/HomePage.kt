@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.weatherapp.model.Forecast
 import java.text.DecimalFormat
@@ -48,10 +50,18 @@ fun HomePage(viewModel: MainViewModel) {
                 )
             }
         } else {
-            val city = viewModel.cityMap[viewModel.city!!]
+            val cities = viewModel.cities.collectAsStateWithLifecycle(emptyMap()).value
+            val city = cities[viewModel.city!!]
+            val weather = viewModel.weather.collectAsStateWithLifecycle(emptyMap())
+                .value[viewModel.city!!]
+            val forecasts = viewModel.forecast.collectAsStateWithLifecycle(emptyMap())
+                .value[viewModel.city!!]
+            LaunchedEffect(viewModel.city!!) {
+                viewModel.loadForecast(viewModel.city!!)
+            }
             Row {
                 AsyncImage( // Substitui o Icon
-                    model = viewModel.weather(viewModel.city!!).imgUrl,
+                    model = weather?.imgUrl,
                     modifier = Modifier.size(140.dp),
                     error = painterResource(id = R.drawable.loader_circle),
                     contentDescription = "Imagem"
@@ -67,7 +77,8 @@ fun HomePage(viewModel: MainViewModel) {
                         if (city != null) {
                             val icon =
                                 if (city.isMonitored) Icons.Filled.Notifications else Icons.Outlined.Notifications
-                            Icon(imageVector = icon, contentDescription = "Monitorada?",
+                            Icon(
+                                imageVector = icon, contentDescription = "Monitorada?",
                                 modifier = Modifier
                                     .size(32.dp)
                                     .clickable {
@@ -77,8 +88,8 @@ fun HomePage(viewModel: MainViewModel) {
                         }
                     }
 
-                    viewModel.city?.let { name ->
-                        val weather = viewModel.weather(name)
+                    viewModel.city?.let {
+                        val weather = weather
                         Spacer(modifier = Modifier.size(12.dp))
                         Text(
                             text = weather?.desc ?: "...",
@@ -92,7 +103,7 @@ fun HomePage(viewModel: MainViewModel) {
                     }
                 }
             }
-            viewModel.forecast(viewModel.city!!)?.let { forecasts ->
+            forecasts?.let { forecasts ->
                 LazyColumn {
                     items(items = forecasts) { forecast ->
                         ForecastItem(forecast, onClick = { })
